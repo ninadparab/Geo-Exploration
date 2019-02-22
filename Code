@@ -1,0 +1,37 @@
+
+import urllib.request
+from bs4 import BeautifulSoup
+import pandas as pd
+import numpy as np
+
+
+# Scraping Canadian directory of villages
+
+url = "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/rural-northern-immigration-pilot-remoteness-index.html"
+page = urllib.request.urlopen(url)
+soup = BeautifulSoup(page, "html.parser")
+
+soup.findAll("tr")[4].findAll("td")[1]
+
+A=[]
+B=[]
+C=[]
+D=[]
+E=[]
+villages=[]
+for row in soup.findAll("tr"):
+        cells = row.findAll('td')
+        if len(cells)==5:
+            A.append(cells[0].find(text=True))
+            B.append(cells[1].find(text=True))
+            C.append(cells[2].find(text=True))
+            D.append(cells[3].find(text=True))
+            E.append(cells[4].find(text=True))
+            
+villages=pd.DataFrame(A,columns=['Province'])
+villages['City']=B
+villages['Population']=C
+villages['Index']=D
+villages['Yes/No']=E
+
+villages.groupby(['Province']).count()
